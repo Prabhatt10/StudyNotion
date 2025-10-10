@@ -42,7 +42,7 @@ const userSchema = new mongoose.Schema(
         additionalDetail : {
             type : mongoose.Schema.Types.ObjectId,
             required : true,
-            ref : "profile"
+            ref : "Profile"
         },
         courses :  [
             {
@@ -50,7 +50,7 @@ const userSchema = new mongoose.Schema(
                 ref : "course"
             }
         ],
-        Image : {
+        image : {
             type : String,
             required : true
         },

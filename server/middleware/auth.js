@@ -4,38 +4,27 @@ const USER = require("../model/user");
 
 // auth
 
-exports.auth = async (req,res,next) => {
+exports.auth = (req,res,next) => {
     try{
         const token = req.body.token || req.cookies.token || (req.header("Authorization") && req.header("Authorization").replace("Bearer ","").trim());
-        
-        // token is missing
+
         if(!token){
-            return res.status(403).json({
-                success : false,
-                message : 'token is missing'
-            });
+            return res.status(403).json({ success: false, message: 'Token is missing' });
         }
 
-        // verifying
+        let decode;
         try{
-            const decode = await jwt.verify(token,process.env.JWT_SECRET);
-            console.log(decode);
+            decode = jwt.verify(token, process.env.JWT_SECRET);
             req.user = decode;
-
         } catch(error){
-            return res.status(401).json({
-                success : false,
-                message : 'token is invalid'
-            });
+            return res.status(401).json({ success: false, message: 'Token is invalid' });
         }
+        console.log("middleware working properly")
+
         next();
-    }
-    catch(error){
+    } catch(error){
         console.log(error);
-        return res.status(500).json({
-            success : false,
-            message : 'something went wrong while validating the auth token'
-        });
+        return res.status(500).json({ success: false, message: 'Something went wrong while validating auth token' });
     }
 }
 

@@ -9,7 +9,6 @@ const profileSchema = new mongoose.Schema({
     },
     about : {
         type : String,
-        required : true
     },
     contactNumber : {
         type : Number,
