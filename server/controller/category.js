@@ -37,10 +37,11 @@ exports.createCategory = async (req,res) => {
 // get all CATEGORY handler function
 exports.getAllCategory = async (req,res) => {
     try{
-        const allTags = await TAG.find({} , {name:true,description:true});
+        const allTags = await CATEGORY.find({} , {name:true,description:true});
         return res.status(200).json({
             success : true,
-            message : 'All CATEGORY returned successfully'
+            message : 'All CATEGORY returned successfully',
+            allTags
         });
     }
     catch(error){
@@ -52,57 +53,59 @@ exports.getAllCategory = async (req,res) => {
     }
 }
 
-exports.categoryPageDetails = async (req,res) => {
-    try{
+
+exports.categoryPageDetails = async (req, res) => {
+    try {
         // get category id
-        const {categoryID} = req.body;
+        const { categoryID } = req.body;
+
         // get courses for specified category ID
         const selectedCategory = await CATEGORY.findById(categoryID)
-                                                        .populate("courses")
-                                                        .exec()
+            .populate("courses")
+            .exec();
+
         // validation
-        if(!selectedCategory){
+        if (!selectedCategory) {
             return res.status(403).json({
-                success : false,
-                message : 'selected category is not present'
+                success: false,
+                message: 'Selected category is not present'
             });
         }
 
-        // get courses from different Category
-        const differentCategory = await CATEGORY.find({
-            _id : {$ne : categoryID }
-        }).populate("courses").exec();
+        // get courses from different categories
+        const differentCategory = await CATEGORY.find({ _id: { $ne: categoryID } })
+            .populate("courses")
+            .exec();
 
-        // get top selling course
+        // get top selling courses
         const allCategories = await CATEGORY.find()
-                                            .populate({
-                                                path : "course",
-                                                match :{status : "published"},
-                                                populate : {
-                                                    path : "instructor",
-                                                },
-                                            }) .exec()
-        
-        const allCourse = allCategories.flatMap((category) => CATEGORY.course)
-        const mostSelling = allCourse
-                                    .sort((a,b) => b.sold - a.sold)
-                                    .slice(0,10)
+            .populate({
+                path: "courses",
+                match: { status: "published" },
+                populate: { path: "instructor" }
+            })
+            .exec();
+
+        const allCourses = allCategories.flatMap(category => category.courses);
+        const mostSelling = allCourses
+            .sort((a, b) => b.sold - a.sold)
+            .slice(0, 10);
 
         // return response
         return res.status(200).json({
-            success : true,
-            data : {
+            success: true,
+            data: {
                 selectedCategory,
-                differentCategory
+                differentCategory,
+                mostSelling
             }
         });
 
-         
-    } catch (error){
+    } catch (error) {
         console.log(error);
         return res.status(500).json({
-            success : false,
-            message : 'Error in getting CATEGORY page details'
+            success: false,
+            message: 'Error in getting category page details'
         });
     }
 }
