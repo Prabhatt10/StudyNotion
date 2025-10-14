@@ -1,80 +1,101 @@
-import React, { useState } from 'react'
-import { CgPassword } from 'react-icons/cg'
-import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai'
-import { Link } from 'react-router-dom'
-import { toast } from 'react-hot-toast'
-import { useNavigate } from 'react-router-dom'
+import React, { useState } from "react";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import {login} from '../../../services/operations/authAPI'
 
-function Login({setIsLoggedIn}) {
+function Login() {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-    const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
 
-    const [formData, setFormData] = useState({
-        email: "" ,
-        password: ""
-    })
+  const [showPassword, setShowPassword] = useState(false);
+  const {email,password} = formData ;
 
-    const [showPassword, setShowPassword] = useState(false);
+  const changeHandler = (event) => {
+    setFormData((prev) => ({
+      ...prev,
+      [event.target.name]: event.target.value,
+    }));
+  };
 
-    function changeHandler(event) {
-        setFormData(prevData => ({
-            ...prevData,
-            [event.target.name]: event.target.value
-        }))
-    }
+  const clickHandler = () => {
+    setShowPassword((prev) => !prev);
+  };
 
-    function clickHandler() {
-        setShowPassword(prev => !prev);
-    }
-
-    function submitHandler(event) {
-        event.preventDefault();
-        setIsLoggedIn(true);
-        toast.success("Logged In");
-        navigate("/dashboard")
-    }
+  const submitHandler = (event) => {
+    event.preventDefault();
+    dispatch(login(email,password,navigate));
+  };
 
   return (
-    <form onSubmit={submitHandler} 
-        className='flex flex-col w-full gap-y mt-6'
+    <form
+      onSubmit={submitHandler}
+      className="flex flex-col w-full max-w-md mx-auto gap-4 mt-6 px-4 sm:px-0"
     >
-    <label className='w-full' >
-        <p className='text-[#DBDDEA] text-[0.875rem] mb-1 leading-[1.375rem] '>Email Address <sup className='text-pink-200' >*</sup></p>
-        <input 
-            required
-            type="email"
-            value={formData.email}
-            onChange={changeHandler}
-            placeholder="Enter Email Id"
-            name="email"
-            className='bg-[#161D29] rounded-[0.5rem] text-[#DBDDEA] w-full p-[12px] '
-                />
-            </label>
+      {/* Email */}
+      <label className="w-full">
+        <p className="text-[#DBDDEA] text-sm mb-1">
+          Email Address <sup className="text-pink-400">*</sup>
+        </p>
+        <input
+          required
+          type="email"
+          value={formData.email}
+          onChange={changeHandler}
+          placeholder="Enter Email Id"
+          name="email"
+          className="bg-[#161D29] rounded-md text-[#DBDDEA] w-full p-3 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+        />
+      </label>
 
-        <label className='w-full relative mt-2' >
-            <p className='text-[#DBDDEA] text-[0.875rem] mb-1 leading-[1.375rem]'>Password <sup>*</sup></p>
-            <input 
-                required
-                type={showPassword ? "text" : "password"}
-                value={formData.password}
-                onChange={changeHandler}
-                placeholder="Enter Password"
-                name="password"
-                className='bg-[#161D29] rounded-[0.5rem] text-[#DBDDEA] w-full p-[12px] '
-                />
-                <span onClick={clickHandler} className='text-white absolute right-3 top-[42px] '>
-                    {showPassword ? <AiOutlineEye className='font-24 text-[#AFB2BF] cursor-pointer ' /> : <AiOutlineEyeInvisible className='font-24 text-[#AFB2BF] cursor-pointer' />}
-                </span>
+      {/* Password */}
+      <label className="w-full relative">
+        <p className="text-[#DBDDEA] text-sm mb-1">
+          Password <sup className="text-pink-400">*</sup>
+        </p>
+        <input
+          required
+          type={showPassword ? "text" : "password"}
+          value={formData.password}
+          onChange={changeHandler}
+          placeholder="Enter Password"
+          name="password"
+          className="bg-[#161D29] rounded-md text-[#DBDDEA] w-full p-3 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+        />
+        <span
+          onClick={clickHandler}
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-[#AFB2BF] cursor-pointer"
+        >
+          {showPassword ? (
+            <AiOutlineEye size={20} />
+          ) : (
+            <AiOutlineEyeInvisible size={20} />
+          )}
+        </span>
+      </label>
 
-                <Link to="/">
-                    <p>Forgot Password</p>
-                </Link>
-            </label>
-        <button type="submit" className='bg-yellow-500 rounded-[8px] w-full px-[12px] py-[8px] mt-4 text-black cursor-pointer font-medium'>
-            Sign In
-        </button>
+      {/* Forgot Password */}
+      <div className="w-full text-right">
+        <Link to="/resetPassword">
+          <p className="text-sm text-yellow-500 hover:underline">Forgot Password?</p>
+        </Link>
+      </div>
+
+      {/* Submit Button */}
+      <button
+        type="submit"
+        className="bg-yellow-500 rounded-md w-full py-3 mt-2 text-black font-medium hover:bg-yellow-400 transition-colors"
+      >
+        Sign In
+      </button>
     </form>
-  )
+  );
 }
 
-export default Login
+export default Login;

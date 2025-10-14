@@ -1,148 +1,206 @@
-import { useState } from 'react'
-import toast from 'react-hot-toast';
-import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
+import { useState } from "react";
+import toast from "react-hot-toast";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router";
+
+import { sendOTP } from "../../../services/operations/authAPI";
+import { setSignUpData } from "../../../slices/AuthSlice";
+import { ACCOUNT_TYPE } from "../../../utils/constants";
+
+import Tab from "../../common/Tab";
+
+
 
 function SignUp() {
-const [formData, setFormData] = useState({
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     email: "",
     password: "",
-    confirmPassword: ""
+    confirmPassword: "",
   });
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [accountType, setAccountType] = useState(ACCOUNT_TYPE.STUDENT);
 
-  const [accountType,setAccountType] = useState("student");
+  const {firstName,lastName,email,password,confirmPassword} = formData
 
-  function changeHandler(event) {
-    setFormData(prev => ({
+  const changeHandler = (e) => {
+    setFormData((prev) => ({
       ...prev,
-      [event.target.name]: event.target.value
+      [e.target.name]: e.target.value,
     }));
-  }
+  };
 
-  function clickHandler1() {
-    setShowPassword(prev => !prev);
-  }
-
-  function clickHandler2() {
-    setShowConfirmPassword(prev => !prev);
-  }
-
-  function submitHandler(event) {
+  const submitHandler = (event) => {
     event.preventDefault();
-
-    if(formData.password !== formData.confirmPassword) {
+    if (formData.password !== formData.confirmPassword) {
       toast.error("Passwords do not match");
       return;
     }
-    setIsLoggedIn(true);
-    toast.success("Account Created");
-  }
+    const signupData = {
+      ...formData,
+      accountType,
+    }
+    dispatch(setSignUpData(signupData))
+    dispatch(sendOTP(formData.email,navigate))
+
+    setFormData({
+      firstName : "",
+      lastName:"",
+      email :"",
+      password : "",
+      confirmPassword : "",
+    })
+    setAccountType(ACCOUNT_TYPE.STUDENT)
+  };
+
+  const tabData = [
+    {
+      id :  1,
+      tabName : "Student",
+      type : ACCOUNT_TYPE.STUDENT,
+    },
+    {
+      id : 2,
+      tabName : "Instructor",
+      type : ACCOUNT_TYPE.INSTRUCTOR
+    }
+  ]
 
   return (
-    <div className='flex flex-col w-full ' >
-      <div className="flex bg-[#161D29] p-1 gap-z-1 my-6 rounded-full max-w-max">
-        <button onClick={ () => setAccountType("student")} type="button" 
-        className={`${accountType === "student" ?
-        "bg-[#000814] text-[#DBDDEA]" :
-        "bg-transparent text-[#999DAA]"
-        } py-2 px-5 rounded-full transition-all duration-200`}
-        >
-          Student
-        </button>
-        <button onClick={ () => setAccountType("instructor")} type="button" 
-        className={`${accountType === "instructor" ?
-        "bg-[#000814] text-[#DBDDEA]" :
-        "bg-transparent text-[#999DAA]"
-        } py-2 px-5 rounded-full transition-all duration-200`}
-        >
-          Instructor
-        </button>
-      </div>
+    <div className="flex flex-col w-full max-w-md mx-auto px-4 sm:px-0">
+      {/* Account Type Toggle */}
+      {/* <div className="flex bg-[#161D29] p-1 gap-1 my-6 rounded-full max-w-max">
+        {["student", "instructor"].map((type) => (
+          <button
+            key={type}
+            type="button"
+            onClick={() => setAccountType(type)}
+            className={`py-2 px-5 rounded-full transition-all duration-200 ${
+              accountType === type
+                ? "bg-[#000814] text-[#DBDDEA]"
+                : "bg-transparent text-[#999DAA]"
+            }`}
+          >
+            {type.charAt(0).toUpperCase() + type.slice(1)}
+          </button>
+        ))}
+      </div> */}
 
-      <form onSubmit={submitHandler}>
-        <div className="flex w-full gap-x-4 mt-4">
-          <label className='w-full'>
-            <p className='text-[#DBDDEA] text-[0.875rem] mb-1 leading-[1.375rem] '>First Name<sup className='text-pink-200' >*</sup></p>
+      <Tab tabData={tabData} field={accountType} setField={setAccountType} />
+
+      {/* SignUp Form */}
+      <form onSubmit={submitHandler} className="flex flex-col gap-4 w-full gap-y-4 ">
+        {/* Name Fields */}
+        <div className="flex flex-col sm:flex-row gap-4">
+          <label className="w-full">
+            <p className="text-[#DBDDEA] text-sm mb-1">
+              First Name <sup className="text-pink-400">*</sup>
+            </p>
             <input
               required
-              type='text'
-              name='firstName'
+              type="text"
+              name="firstName"
+              placeholder="Enter First Name"
+              value={firstName}
               onChange={changeHandler}
-              placeholder='Enter First Name'
-              value={formData.firstName}
-              className='bg-[#161D29] rounded-[0.5rem] text-[#DBDDEA] w-full p-[12px] '
+              className="bg-[#161D29] rounded-md text-[#DBDDEA] w-full p-3 focus:outline-none focus:ring-2 focus:ring-yellow-500"
             />
           </label>
-
-          <label className='w-full'>
-            <p className='text-[#DBDDEA] text-[0.875rem] mb-1 leading-[1.375rem] '>Last Name<sup className='text-pink-200' >*</sup></p>
+          <label className="w-full">
+            <p className="text-[#DBDDEA] text-sm mb-1">
+              Last Name <sup className="text-pink-200">*</sup>
+            </p>
             <input
               required
-              type='text'
-              name='lastName'
+              type="text"
+              name="lastName"
+              placeholder="Enter Last Name"
+              value={lastName}
               onChange={changeHandler}
-              placeholder='Enter Last Name'
-              value={formData.lastName}
-              className='bg-[#161D29] rounded-[0.5rem] text-[#DBDDEA] w-full p-[12px] '
+              className="bg-[#161D29] rounded-md text-[#DBDDEA] w-full p-3 focus:outline-none focus:ring-2 focus:ring-yellow-500"
             />
           </label>
         </div>
 
-        <label>
-          <p className='text-[#DBDDEA] text-[0.875rem] mt-2 mb-2 leading-[1.375rem] '>Email Address<sup className='text-pink-200'>*</sup></p>
+        {/* Email */}
+        <label className="w-full">
+          <p className="text-[#DBDDEA] text-sm mb-1">
+            Email Address <sup className="text-pink-400">*</sup>
+          </p>
           <input
             required
-            type='email'
-            name='email'
+            type="email"
+            name="email"
+            placeholder="Enter Email"
+            value={email}
             onChange={changeHandler}
-            placeholder='Email address'
-            value={formData.email}
-            className='bg-[#161D29] rounded-[0.5rem] text-[#DBDDEA] w-full p-[12px]'
+            className="bg-[#161D29] rounded-md text-[#DBDDEA] w-full p-3 focus:outline-none focus:ring-2 focus:ring-yellow-500"
           />
         </label>
 
-        <div className="flex gap-4">
-          <label className='w-full relative mt-2'>
-            <p className='text-[#DBDDEA] text-[0.875rem] mb-1 leading-[1.375rem] '>Create Password<sup className='text-pink-200'>*</sup></p>
+        {/* Password Fields */}
+        <div className="flex flex-col sm:flex-row gap-4">
+          <label className="w-full relative">
+            <p className="text-[#DBDDEA] text-sm mb-1">
+              Create Password <sup className="text-pink-400">*</sup>
+            </p>
             <input
               required
               type={showPassword ? "text" : "password"}
-              name='password'
+              name="password"
+              placeholder="Enter Password"
+              value={password}
               onChange={changeHandler}
-              placeholder='Enter Password'
-              value={formData.password}
-              className='bg-[#161D29] rounded-[0.5rem] text-[#DBDDEA] w-full p-[12px]'
+              className="bg-[#161D29] rounded-md text-[#DBDDEA] w-full p-3 focus:outline-none focus:ring-2 focus:ring-yellow-500"
             />
-            <span onClick={clickHandler1} className='text-white absolute right-3 top-[42px]'>
-              {showPassword ? <AiOutlineEye className='font-24 text-[#AFB2BF] cursor-pointer ' /> : <AiOutlineEyeInvisible className='font-24 text-[#AFB2BF] cursor-pointer' />}
+            <span
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#AFB2BF] cursor-pointer"
+            >
+              {showPassword ? <AiOutlineEye size={20} /> : <AiOutlineEyeInvisible size={20} />}
             </span>
           </label>
 
-          <label className='w-full relative mt-2'>
-            <p className='text-[#DBDDEA] text-[0.875rem] mb-1 leading-[1.375rem] '>Confirm Password<sup className='text-pink-200'>*</sup></p>
+          <label className="w-full relative">
+            <p className="text-[#DBDDEA] text-sm mb-1">
+              Confirm Password <sup className="text-pink-400">*</sup>
+            </p>
             <input
               required
               type={showConfirmPassword ? "text" : "password"}
-              name='confirmPassword'
+              name="confirmPassword"
+              placeholder="Confirm Password"
+              value={confirmPassword}
               onChange={changeHandler}
-              placeholder='Confirm Password'
-              value={formData.confirmPassword}
-              className='bg-[#161D29] rounded-[0.5rem] text-[#DBDDEA] w-full p-[12px]'
+              className="bg-[#161D29] rounded-md text-[#DBDDEA] w-full p-3 focus:outline-none focus:ring-2 focus:ring-yellow-500"
             />
-            <span onClick={clickHandler2} className='text-white absolute right-3 top-[42px] '>
-              {showConfirmPassword ? <AiOutlineEye className='font-24 text-[#AFB2BF] cursor-pointer ' /> : <AiOutlineEyeInvisible className='font-24 text-[#AFB2BF] cursor-pointer' />}
+            <span
+              onClick={() => setShowConfirmPassword((prev) => !prev)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#AFB2BF] cursor-pointer"
+            >
+              {showConfirmPassword ? <AiOutlineEye size={20} /> : <AiOutlineEyeInvisible size={20} />}
             </span>
           </label>
         </div>
 
-        <button type="submit" className='bg-yellow-500 rounded-[8px] w-full px-[12px] py-[8px] mt-4 text-black cursor-pointer font-medium'>Create Account</button>
+        {/* Submit Button */}
+        <button
+          type="submit"
+          className="bg-yellow-500 rounded-md w-full py-3 mt-2 text-black font-medium hover:bg-yellow-400 transition-colors"
+        >
+          Create Account
+        </button>
       </form>
     </div>
-  )
+  );
 }
 
-export default SignUp
+export default SignUp;
+

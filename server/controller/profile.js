@@ -1,132 +1,127 @@
 const USER = require("../model/user");
 const PROFILE = require("../model/profile");
 const COURSE = require("../model/course");
-// const { Queue } = require("bullmq");
-// const { response } = require("express");
-// const deletionQueue = new Queue("account-deletion");
 
-exports.updateProfile = async (req,res) => {
-    try{
-        // get data
-        const {dateOfBirth="" , about="",contactNumber,gender} = req.body;
-        // get user id
+// Update Profile
+exports.updateProfile = async (req, res) => {
+    try {
+        const { dateOfBirth = "", about = "", contactNumber, gender } = req.body;
         const userID = req.user.id;
-        // validation
-        if(!contactNumber || !gender || !userID){
+
+        // Validation
+        if (!contactNumber || !gender || !userID) {
             return res.status(400).json({
-                success : true,
-                message : 'All fields are required'
+                success: false,
+                message: "All fields are required"
             });
         }
-        // find profile
-        const userDetails = await USER.findById({userID});
+
+        // Find user and profile
+        const userDetails = await USER.findById(userID);
+        if (!userDetails) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+
         const profileID = userDetails.additionalDetail;
-        const profileDetails = await PROFILE.findById({profileID});
-        // update
-        profileDetails.dateOfBirth = dateOfBirth,
-        profileDetails.about= about,
-        profileDetails.contactNumber = contactNumber,
-        profileDetails.gender = gender
+        const profileDetails = await PROFILE.findById(profileID);
+
+        if (!profileDetails) {
+            return res.status(404).json({
+                success: false,
+                message: "Profile not found"
+            });
+        }
+
+        // Update profile fields
+        profileDetails.dateOfBirth = dateOfBirth;
+        profileDetails.about = about;
+        profileDetails.contactNumber = contactNumber;
+        profileDetails.gender = gender;
 
         await profileDetails.save();
 
-        // return response
         return res.status(200).json({
-            success : true,
-            message : 'Profile Updated Successfully',
-            profileDetails 
+            success: true,
+            message: "Profile Updated Successfully",
+            profileDetails
         });
-
-    }
-    catch(error){
+    } catch (error) {
         console.log(error);
         return res.status(500).json({
-            success : false,
-            message : 'Profile cannot be Updated'
+            success: false,
+            message: "Profile cannot be updated"
         });
     }
-}
+};
 
-
-exports.deleteProfile = async (req,res) => {
-    try{
-        // get id
+// Delete Profile
+exports.deleteProfile = async (req, res) => {
+    try {
         const userID = req.user.id;
-        // validation
+
+        // Find user
         const userDetails = await USER.findById(userID);
-        if(!userDetails){
+        if (!userDetails) {
             return res.status(404).json({
-                success : false,
-                message : 'user not found'
+                success: false,
+                message: "User not found"
             });
         }
-        // delete profile
-        await PROFILE.findByIdAndDelete({_id : userDetails.additionalDetail});
-    
-        // HW : unenrolled user from all courses
-        for(const courseID of USER.courses){
-            courseID,
+
+        // Delete profile
+        await PROFILE.findByIdAndDelete(userDetails.additionalDetail);
+
+        // Unenroll user from all courses
+        for (const courseID of userDetails.courses) {
             await COURSE.findByIdAndUpdate(
-                {$pull : {studentsEnrolled : userID}},
-                {new :true}
-            )
+                courseID,
+                { $pull: { studentsEnrolled: userID } },
+                { new: true }
+            );
         }
 
-        // delete user
-        // const deletedAfter = new Date(Date.now() + 5*24*60*60*1000);
-        // await USER.updateOne(
-        //     { _id: userID },
-        //     { $set: { status: 'pending_delete', deleteAfter } }
-        // );
+        // Delete user
+        await USER.findByIdAndDelete(userID);
 
-        // await deletionQueue.add(
-        //     'deleteAccount',
-        //     { userId: userID },
-        //     {
-        //         delay: 5 * 24 * 60 * 60 * 1000,
-        //         jobId: `delete:${userID}`,
-        //         removeOnComplete: true,
-        //         removeOnFail: 5000
-        //     }
-        // );
-
-        await USER.findByIdAndDelete({_id : userID});
-        // return response
-        return req.status(200).json({
-            success : true,
-            message : 'Profile deleted successfully'
+        return res.status(200).json({
+            success: true,
+            message: "Profile and account deleted successfully"
         });
-    } catch(error) {
+    } catch (error) {
         console.log(error);
         return res.status(500).json({
-            success : false,
-            message : 'Profile cannot be deleted, Please try again later'
+            success: false,
+            message: "Profile cannot be deleted, please try again later"
         });
     }
-}
+};
 
-// HW : How to schedule a request to delete account after 5 days
-
-exports.getAllUserDetails = async (req,res) => {
-    try{
+// Get All User Details
+exports.getAllUserDetails = async (req, res) => {
+    try {
         const userID = req.user.id;
-        const userDetails = await USER.findById(id).populate("additionalDetail").exec();
-        if(!userDetails){
+        const userDetails = await USER.findById(userID).populate("additionalDetail").exec();
+
+        if (!userDetails) {
             return res.status(404).json({
-                success : false,
-                message : 'user is empty'
+                success: false,
+                message: "User not found"
             });
         }
+
         return res.status(200).json({
-            success : true,
-            message : 'successfully get All User Details'
+            success: true,
+            message: "Successfully fetched user details",
+            data: userDetails
         });
-    }
-    catch(error){
+    } catch (error) {
         console.log(error);
         return res.status(500).json({
-            success : false,
-            message : 'All users cannot be get'
+            success: false,
+            message: "Unable to fetch user details"
         });
     }
-}
+};

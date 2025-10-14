@@ -63,8 +63,8 @@ app.use("/api/v1/course", course);
 // app.use("/api/v1/payment", payment);
 app.use("/api/v1/profile", profile);
 app.use("/api/v1/resetPassword", resetPassword);
-app.use("/api/v1/reviewAndRating", reviewAndRating);
-app.use("/api/v1/sectionAndSubsection", sectionAndSubsection);
+app.use("/api/v1/course", reviewAndRating);
+app.use("/api/v1/course", sectionAndSubsection);
 
 // =======================
 // 🧠 Root Test Route
