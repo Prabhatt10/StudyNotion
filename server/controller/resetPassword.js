@@ -8,25 +8,27 @@ exports.resetPasswordToken = async (req, res) => {
     try {
         const { email } = req.body;
 
-        const user = await USER.findOne({ email });
+        const user = await USER.findOne({email: email });
         if (!user) {
             return res.status(403).json({
                 success: false,
-                message: 'Your email is not registered with us'
+                message: `This Email: ${email} is not Registered With Us Enter a Valid Email`
             });
         }
 
-        const token = crypto.randomUUID();
-        await USER.findOneAndUpdate(
-            { email },
-            { token, resetPasswordExpires: Date.now() + 5 * 60 * 1000 },
+        const token = crypto.randomBytes(20).toString("hex");
+        const updatedDetails = await USER.findOneAndUpdate(
+            {email: email },
+            {
+                token : token, 
+                resetPasswordExpires: Date.now() + 5 * 60 * 1000 },
             { new: true }
         );
 
-        const url = `http://localhost:3000/update-password/${token}`;
-        await mailSender(email, "Password reset link", `Password Reset Link: ${url}`);
+        const url = `http://localhost:5173/updatePassword/${token}`;
+        await mailSender(email, "Password reset link", `Your Link for email verification is ${url}. Please click this url to reset your password.`);
 
-        console.log("token is : " , token);
+        // console.log("token is : " , token);
 
         return res.status(200).json({
             success: true,
@@ -45,10 +47,13 @@ exports.resetPasswordToken = async (req, res) => {
 exports.resetPassword = async (req, res) => {
     try {
         const { token, password, confirmPassword } = req.body;
-
-        
-
-        const userDetails = await USER.findOne({ token });
+        if(password !== confirmPassword){
+            return res.status(403).json({
+                success : false,
+                message : "Password and Confirm Password Does not Match"
+            })
+        }
+        const userDetails = await USER.findOne({token : token });
         if (!userDetails) {
             return res.status(403).json({
                 success: false,
@@ -75,7 +80,7 @@ exports.resetPassword = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         await USER.findOneAndUpdate(
-            { token },
+            {token : token },
             { 
                 password: hashedPassword,
                 token: null, 

@@ -2,7 +2,7 @@ import React from 'react'
 import Template from '../component/core/Auth/Template'
 import loginimg from '../assets/Images/login.webp'
 
-function LoginPage({setIsLoggedIn}) {
+function LoginPage() {
   return (
     <div>
         <Template 
@@ -11,7 +11,6 @@ function LoginPage({setIsLoggedIn}) {
           description2 = "Education to future-proof your career"
           image={loginimg}
           formType="Login"
-          setIsLoggedIn={setIsLoggedIn}
         />
     </div>
   )

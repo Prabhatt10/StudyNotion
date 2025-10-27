@@ -9,7 +9,7 @@ const initialState = {
 
 const authSlice = createSlice({
   name: "auth",
-  initialState,
+  initialState : initialState,
   reducers: {
     setSignUpData(state,value){
       state.signUpData = value.payload
@@ -25,3 +25,4 @@ const authSlice = createSlice({
 
 export const { setSignUpData,setLoading,setToken } = authSlice.actions;
 export default authSlice.reducer;
+

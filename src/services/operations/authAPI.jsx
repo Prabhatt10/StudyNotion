@@ -5,14 +5,18 @@ import { resetCart } from "../../slices/CartSlice";
 import { setUser } from "../../slices/ProfileSlice";
 import { apiConnector } from "../apiConnector";
 import { authEndpoints } from "../api";
+import { resetPasswordEndpoints } from "../api";
 
 const {
   SEND_OTP_API,
   SIGNUP_API,
   LOGIN_API,
+} = authEndpoints; // ✅ fixed variable name
+
+const {
   RESET_PASSWORD_TOKEN_API,
   RESET_PASSWORD_API,
-} = authEndpoints; // ✅ fixed variable name
+}  = resetPasswordEndpoints;
 
 // ===================================================================
 // SEND OTP
@@ -21,7 +25,7 @@ export function sendOTP(email, navigate) {
   return async (dispatch) => {
     const toastID = toast.loading("Loading...");
     dispatch(setLoading(true));
-    
+
     try {
       const response = await apiConnector("POST", SEND_OTP_API, {
         email,
@@ -29,15 +33,18 @@ export function sendOTP(email, navigate) {
       });
       console.log("SENDING API RESPONSE....", response);
 
+      console.log(response.data.success)
+
       if (!response.data.success) {
         throw new Error(response.data.message);
       }
-
       toast.success("OTP Sent Successfully");
+      // if (navigate && window.location.pathname !== "/verify-email") {
+      //   navigate("/verify-email");
+      // }
       navigate("/verify-email");
-    } 
-    catch (error) {
-      console.log("SENDOTP API ERROR............", error);
+    } catch (error) {
+      console.log("SEND OTP API ERROR............", error);
       toast.error("Could Not Send OTP");
     }
     dispatch(setLoading(false));
@@ -48,6 +55,48 @@ export function sendOTP(email, navigate) {
 // ===================================================================
 // SIGNUP
 // ===================================================================
+
+// export function signUp(
+//   accountType,
+//   firstName,
+//   lastName,
+//   email,
+//   password,
+//   confirmPassword,
+//   OTP,
+//   navigate
+// ) {
+//   return async (dispatch) => {
+//     const toastId = toast.loading("Loading...");
+//     dispatch(setLoading(true));
+//     try {
+//       const response = await apiConnector("POST", SIGNUP_API, {
+//         accountType,
+//         firstName,
+//         lastName,
+//         email,
+//         password,
+//         confirmPassword,
+//         otp: OTP, // ✅ backend usually expects "otp"
+//       });
+//       console.log("API response in signup operation");
+//       console.log("SIGNUP API RESPONSE.....", response);
+//       if (!response.data.success) {
+//         throw new Error(response.data.message);
+//       }
+
+//       toast.success("Signup Successful");
+//       navigate("/login");
+//     } catch (error) {
+//       console.log("SIGNUP API ERROR.......", error);
+//       toast.error("Signup Failed");
+//       navigate("/signup");
+//     }
+//     dispatch(setLoading(false));
+//     toast.dismiss(toastId);
+//   };
+// }
+
 export function signUp(
   accountType,
   firstName,
@@ -59,9 +108,20 @@ export function signUp(
   navigate
 ) {
   return async (dispatch) => {
-    const toastId = toast.loading("Loading...");
+    const toastId = toast.loading("Signing you up...");
     dispatch(setLoading(true));
+
     try {
+      console.log("SIGNUP REQUEST BODY:", {
+        accountType,
+        firstName,
+        lastName,
+        email,
+        password,
+        confirmPassword,
+        otp: OTP,
+      });
+
       const response = await apiConnector("POST", SIGNUP_API, {
         accountType,
         firstName,
@@ -69,24 +129,29 @@ export function signUp(
         email,
         password,
         confirmPassword,
-        otp: OTP, // ✅ backend usually expects "otp"
+        otp: OTP, // ✅ Confirm backend expects lowercase "otp"
       });
-      console.log("SIGNUP API RESPONSE.....", response);
+
+      console.log("SIGNUP API RESPONSE:", response.data);
+
       if (!response.data.success) {
         throw new Error(response.data.message);
       }
 
-      toast.success("Signup Successful");
+      toast.success("Signup successful 🎉");
       navigate("/login");
     } catch (error) {
-      console.log("SIGNUP API ERROR.......", error);
-      toast.error("Signup Failed");
-      navigate("/signup");
+      console.log("SIGNUP API ERROR:", error);
+      toast.error(error?.response?.data?.message || "Signup Failed ❌");
     }
+
     dispatch(setLoading(false));
     toast.dismiss(toastId);
   };
 }
+
+
+
 
 // ===================================================================
 // LOGIN
