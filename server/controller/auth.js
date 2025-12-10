@@ -7,7 +7,7 @@ const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const { ClientSession } = require("mongodb");
 require("dotenv").config();
-
+const mailSender = require("../util/mailSender");
 
 // SendOtp
 
@@ -158,70 +158,79 @@ exports.signUp = async (req, res) => {
 
 // login
 
-exports.login = async (req,res) => {
-    try{
-        const {email , password} = req.body ;
+exports.login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
 
-        if(!email || !password){
-            return res.status(403).json({
-                success : false,
-                message : 'Enter corect details'
-            });
-        }
-
-        const user = await USER.findOne({email}).populate("additionalDetail");
-
-        if(!user){
-            return res.status(400).json({
-                success : false,
-                message : 'Please SignUp first'
-            });
-        }
-
-        if(await bcrypt.compare(password,user.password)){
-            // create token by sign method
-            const payload = {
-                email : user.email,
-                id : user._id,
-                accountType : user.accountType
-            }
-
-            const token = jwt.sign(payload,process.env.JWT_SECRET ,{
-                expiresIn : "24h"
-            });
-
-            user.token = token,
-            user.password = undefined
-
-            // generate cookies
-
-            const options = {
-                expiresIn : new Date(Date.now() + 3*24*60*60*1000),
-                httpOnly : true
-            }
-
-            res.cookie("token",token,options).status(200).json({
-                success : true,
-                token,
-                user,
-                message : 'Logged in successfully'
-            });
-        }
-        else{
-            return res.status(401).json({
-                success : false,
-                messagec : 'Password is inccorrect'
-            });
-        }
+    // 1️⃣ Validate required fields
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Email and password are required",
+      });
     }
-    catch(error){
-        console.log(error);
-        return res.status(500).json({
-            success : false,
-            messagec : 'Login failed, Try Again'
-        });
+
+    // 2️⃣ Find user
+    const user = await USER.findOne({ email }).populate("additionalDetail");
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found. Please sign up first.",
+      });
     }
-}
+
+    // 3️⃣ Compare passwords
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: "Incorrect password",
+      });
+    }
+
+    // 4️⃣ Create JWT payload (IMPORTANT: id MUST be included)
+    const payload = {
+      id: user._id,
+      email: user.email,
+      accountType: user.accountType,
+    };
+
+    // 5️⃣ Sign token
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: "24h",
+    });
+
+    // Remove password before sending user
+    user.password = undefined;
+
+    // 6️⃣ Cookie options
+    const options = {
+      expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // secure cookie in prod
+      sameSite: "strict",
+    };
+
+    // 7️⃣ Send success response
+    return res
+      .status(200)
+      .cookie("token", token, options)
+      .json({
+        success: true,
+        message: "Logged in successfully",
+        token,
+        user,
+      });
+
+  } catch (error) {
+    console.log("Login error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Login failed. Please try again later.",
+    });
+  }
+};
+
 
 // change password
 
@@ -299,3 +308,68 @@ exports.changePassword = async (req, res) => {
         });
     }
 };
+
+
+// update password 
+
+exports.updatePassword = async (req, res) => {
+  try {
+    const userID = req.user.id;
+    const { oldPassword ,newPassword } = req.body;
+
+    const userDetails = await USER.findById(userID);
+    console.log(userDetails);
+
+    if(!userDetails){
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+
+    const isPasswordCorrect = await bcrypt.compare(oldPassword, userDetails.password);
+
+    if(!isPasswordCorrect){
+      return res.status(403).json({
+        success: false,
+        message: "Old password is incorrect"
+      });
+    }
+
+    const encryptedPassword = await bcrypt.hash(newPassword, 10);
+
+    const updatedUser = await USER.findByIdAndUpdate(
+      userID,
+      { password: encryptedPassword },
+      { new: true }
+    );
+
+    // send notification email of password update
+
+    try {
+      const emailResponse = await mailSender(
+        updatedUser.email,
+        'Password Updated Successfully',
+        `<p>Password updated successfully for ${updatedUser.firstName} ${updatedUser.lastName}</p>`
+      )
+      console.log("Email for password update send successfully", userDetails.email)
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: "Error in sending email in password update"
+      });
+    }
+
+    return res.status(200).json({
+      success : true,
+      message : "Password updated successfully"
+    })
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Password can't be updated"
+    });
+  }
+}

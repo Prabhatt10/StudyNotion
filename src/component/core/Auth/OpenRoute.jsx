@@ -1,15 +1,17 @@
-// This will prevent authenticated users from accessing this route
-import { useSelector } from "react-redux"
-import { Navigate } from "react-router-dom"
+import { useSelector } from "react-redux";
+import { Navigate } from "react-router-dom";
 
 function OpenRoute({ children }) {
-  const { token } = useSelector((state) => state.auth)
+  // Safely access token from Redux state
+  const token = useSelector((state) => state?.auth?.token);
 
-  if (token === null) {
-    return children
-  } else {
-    return <Navigate to="/dashboard/my-profile" />
+  // If user is NOT authenticated, allow access
+  if (!token) {
+    return children;
   }
+
+  // If user IS authenticated, redirect to dashboard
+  return <Navigate to="/dashboard/my-profile" replace />;
 }
 
-export default OpenRoute
+export default OpenRoute;

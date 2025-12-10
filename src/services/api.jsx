@@ -8,6 +8,7 @@ export const authEndpoints = {
   SIGNUP_API : `${BASE_URL}/auth/signUp`,
   LOGIN_API : `${BASE_URL}/auth/login`,
   CHANGE_PASSWORD_API : `${BASE_URL}/auth/changePassword`,
+  UPDATE_PASSWORD_API : `${BASE_URL}/auth/updatePassword`,
 }
 
 export const resetPasswordEndpoints = {
@@ -16,6 +17,7 @@ export const resetPasswordEndpoints = {
 }
 
 export const profileEndpoints = {
+  UPDATE_DISPLAY_PICTURE_API : `${BASE_URL}/profile/updateDisplayPicture`,
   UPDATE_PROFILE_API : `${BASE_URL}/profile/updateProfile` ,
   DELETE_PROFILE_API :  `${BASE_URL}/profile/deleteProfile`,
   GET_ALL_USER_DETAILS_API : `${BASE_URL}/profile/getAllUserDetails` ,

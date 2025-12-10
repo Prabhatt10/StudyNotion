@@ -1,30 +1,107 @@
 import './App.css';
-import { Routes, Route } from 'react-router-dom'; 
+import { Routes, Route, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+
+// Routes & Components
+import OpenRoute from './component/core/Auth/OpenRoute';
+import PrivateRoute from './component/core/Auth/PrivateRoute';
+import Navbar from './component/common/Navbar';
+import Footer from './component/common/Footer';
+import MyProfile from './component/core/Dashboard/MyProfile'
+import Settings from './component/core/Dashboard/Settings/settings'
+
+// Pages
 import Home from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUp';
-import { useState } from 'react';
-import Navbar from './component/common/Navbar';
 import ForgetPassword from './pages/ForgetPassword';
 import UpdatePassword from './pages/UpdatePassword';
 import VerifyEmail from './pages/VerifyEmail';
+import AboutPage from './pages/AboutPage';
+import Dashboard from './pages/Dashboard';
+import ErrorPage from './pages/Error'
+
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { user } = useSelector((state) => state.profile);
 
   return (
     <div className="w-screen min-h-screen bg-[#000814] font-inter flex flex-col">
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/login" element={<LoginPage setIsLoggedIn={setIsLoggedIn} />} />
-        <Route path="/signup" element={<SignUpPage setIsLoggedIn={setIsLoggedIn} />} />
-        <Route path='/resetPassword' element={<ForgetPassword setIsLoggedIn={setIsLoggedIn}/> } />
-        <Route path="/updatePassword/:token" element={<UpdatePassword setIsLoggedIn={setIsLoggedIn} />} />
-        <Route path="/verify-email" element={<VerifyEmail />} />
+
+        <Route
+          path="/signup"
+          element={
+            <OpenRoute>
+              <SignUpPage />
+            </OpenRoute>
+            //<SignUpPage />
+          }
+        />
+
+        <Route
+          path="/login"
+          element={
+            <OpenRoute>
+              <LoginPage />
+            </OpenRoute>
+            // <LoginPage />
+          }
+        />
+
+        <Route
+          path="/resetPassword"
+          element={
+            <OpenRoute>
+              <ForgetPassword />
+            </OpenRoute>
+          }
+        />
+
+        <Route
+          path="/verify-email"
+          element={
+            <OpenRoute>
+              <VerifyEmail />
+            </OpenRoute>
+          }
+        />
+
+        <Route
+          path="/updatePassword/:token"
+          element={
+            <OpenRoute>
+              <UpdatePassword />
+            </OpenRoute>
+          }
+        />
+
+        <Route path="/about" element={<AboutPage />} />
+
+        <Route 
+          // path='/dashboard'
+          element={
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          }
+        >
+          <Route path='/dashboard/my-profile' element={<MyProfile />} />
+          <Route path='/dashboard/settings' element={<Settings />} />
+        </Route>
+
+        
+
+        <Route path='*' element={<ErrorPage />} />
+
       </Routes>
+      <Footer />
     </div>
-  );
-}
+  );}
 
 export default App;

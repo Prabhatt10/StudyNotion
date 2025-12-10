@@ -1,9 +1,8 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { BiArrowBack } from "react-icons/bi"
-
-import {getPasswordResetToken} from '../services/operations/authAPI'
-import { Link } from 'react-router'
+import { getPasswordResetToken } from '../services/operations/authAPI'
+import { Link } from 'react-router-dom'   // ✅ Correct import
 
 function ForgetPassword() {
   const [email, setEmail] = useState("")
@@ -13,7 +12,7 @@ function ForgetPassword() {
 
   function submitHandler(event) {
     event.preventDefault()
-    dispatch(getPasswordResetToken(email,setEmailSent))
+    dispatch(getPasswordResetToken(email, setEmailSent))
   }
 
   return (
@@ -38,7 +37,7 @@ function ForgetPassword() {
             )}
           </div>
 
-          <form onSubmit={submitHandler} >
+          <form onSubmit={submitHandler}>
             {!emailSent && (
               <label className="w-full">
                 <p className="mb-1 text-[0.875rem] leading-[1.375] text-[#F1F2FF]">
@@ -51,7 +50,7 @@ function ForgetPassword() {
                   value={email}
                   placeholder="Enter Email Address"
                   onChange={(event) => setEmail(event.target.value)}
-                  className="form-style w-full bg-[#2C333F] text-[#F1F2FF] px-4 py-2.5 rounded-md mt-2" 
+                  className="form-style w-full bg-[#2C333F] text-[#F1F2FF] px-4 py-2.5 rounded-md mt-2"
                 />
               </label>
             )}
@@ -63,7 +62,7 @@ function ForgetPassword() {
             </button>
           </form>
 
-          <Link to={'/login'} className="mt-6 flex items-center justify-between">
+          <Link to="/login" className="mt-6 flex items-center justify-between">
             <p className="flex items-center gap-x-2 text-[#F1F2FF] cursor-pointer">
               <BiArrowBack /> Back to login
             </p>

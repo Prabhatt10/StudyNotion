@@ -1,28 +1,29 @@
-import { useRef, useState } from "react"
-import { AiOutlineCaretDown } from "react-icons/ai"
-import { VscDashboard, VscSignOut } from "react-icons/vsc"
-import { useDispatch, useSelector } from "react-redux"
-import { Link, useNavigate } from "react-router-dom"
+import { useRef, useState } from "react";
+import { AiOutlineCaretDown } from "react-icons/ai";
+import { VscDashboard, VscSignOut } from "react-icons/vsc";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 
-import useOnClickOutside from '../../../hooks/useOnClickOutside'
-import { logout } from "../../../services/operations/authAPI"
+// ✅ Check this import (default vs named)
+import useOnClickOutside from "../../../hooks/useOnClickOutside";
+import { logout } from "../../../services/operations/authAPI";
 
 export default function ProfileDropdown() {
-  const { user } = useSelector((state) => state.profile)
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
-  const [open, setOpen] = useState(false)
-  const ref = useRef(null)
+  const { user } = useSelector((state) => state.profile);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
 
   // Close dropdown on outside click
- useOnClickOutside(ref, () => setOpen(false))
+  useOnClickOutside(ref, () => setOpen(false));
 
-  if (!user) return null
+  if (!user) return null;
 
   const handleLogout = () => {
-    dispatch(logout(navigate))
-    setOpen(false)
-  }
+    dispatch(logout(navigate));
+    setOpen(false);
+  };
 
   return (
     <div className="relative" ref={ref}>
@@ -32,8 +33,8 @@ export default function ProfileDropdown() {
         className="flex items-center gap-x-1 focus:outline-none"
       >
         <img
-          src={user?.image}
-          alt={`profile-${user?.firstName}`}
+          src={user?.image || "/default-avatar.png"}
+          alt={`profile-${user?.firstName || "user"}`}
           className="aspect-square w-[32px] sm:w-[36px] rounded-full object-cover border border-[#424854]"
         />
         <AiOutlineCaretDown
@@ -62,7 +63,7 @@ export default function ProfileDropdown() {
           {/* Logout Option */}
           <button
             onClick={handleLogout}
-            className="flex w-full items-center gap-x-2 py-[10px] px-[12px] text-sm text-red-400 hover:bg-[#161D29] hover:text-[#DBDDEA] transition-all duration-200"
+            className="flex w-full items-center gap-x-2 py-[10px] px-[12px] text-sm text-red-400 hover:bg-[#2C333F] hover:text-[#DBDDEA] transition-all duration-200"
           >
             <VscSignOut className="text-lg" />
             Logout
@@ -70,5 +71,5 @@ export default function ProfileDropdown() {
         </div>
       )}
     </div>
-  )
+  );
 }

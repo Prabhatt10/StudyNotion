@@ -9,7 +9,7 @@ import bgHome from '../assets/Images/bghome.svg'
 import TimeLineSection from '../component/core/HomePage/TimeLineSection'
 import LearningLanguage from '../component/core/HomePage/LearningLanguage'
 import BecomeInstructorSection from '../component/core/HomePage/BecomeInstructorSection'
-import Footer from '../component/common/Foooter'
+
 import ExploreMore from '../component/core/HomePage/ExploreMore'
 
 function HomePage() {
@@ -194,7 +194,6 @@ function HomePage() {
         </h2>
       </section>
 
-      <Footer />
     </div>
   )
 }

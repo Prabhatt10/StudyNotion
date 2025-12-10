@@ -1,10 +1,12 @@
 const express = require("express");
 const router = express.Router();
 
-const {updateProfile,deleteProfile,getAllUserDetails} = require("../controller/profile");
+const {updateProfile,deleteProfile,getAllUserDetails,updateDisplayPicture} = require("../controller/profile");
+const {auth} = require("../middleware/auth");
 
-router.post("/updateProfile",updateProfile);
-router.post("/deleteProfile",deleteProfile);
-router.get("/getAllUserDetails",getAllUserDetails);
+router.put("/updateProfile",auth,updateProfile);
+router.delete("/deleteProfile",auth,deleteProfile);
+router.get("/getAllUserDetails",auth,getAllUserDetails);
+router.put("/updateDisplayPicture",auth,updateDisplayPicture);
 
 module.exports = router;
