@@ -21,6 +21,8 @@ export const profileEndpoints = {
   UPDATE_PROFILE_API : `${BASE_URL}/profile/updateProfile` ,
   DELETE_PROFILE_API :  `${BASE_URL}/profile/deleteProfile`,
   GET_ALL_USER_DETAILS_API : `${BASE_URL}/profile/getAllUserDetails` ,
+  GET_USER_ENROLLED_COURSES_API : `${BASE_URL}/profile/getUserEnrolledCourses`,
+  GET_INSTRUCTOR_DATA_API : `${BASE_URL}/profile/getInstructorData`,
 }
 
 export const courseEndpoints = {

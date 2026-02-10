@@ -10,6 +10,8 @@ import Navbar from './component/common/Navbar';
 import Footer from './component/common/Footer';
 import MyProfile from './component/core/Dashboard/MyProfile'
 import Settings from './component/core/Dashboard/Settings/settings'
+import EnrolledCourses from './component/core/Dashboard/EnrolledCourses';
+import Cart from './component/core/Dashboard/Cart/Cart';
 
 // Pages
 import Home from './pages/HomePage';
@@ -93,6 +95,8 @@ function App() {
         >
           <Route path='/dashboard/my-profile' element={<MyProfile />} />
           <Route path='/dashboard/settings' element={<Settings />} />
+          <Route path='/dashboard/enrolled-courses' element={<EnrolledCourses />} />
+          <Route path='/dashboard/cart' element={<Cart />} />
         </Route>
 
         

@@ -1,66 +1,12 @@
 const USER = require("../model/user");
 const PROFILE = require("../model/profile");
 const COURSE = require("../model/course");
+const COURSE_PROGRESS = require("../model/courseprogress");
 const { imageUploadToCloudinary } = require("../util/imageUploader");
 const dotenv = require("dotenv");
 dotenv.config();
-
-
-// Update Profile
-// exports.updateProfile = async (req, res) => {
-//     try {
-//         const { dateOfBirth = "", about = "", contactNumber, gender } = req.body;
-//         const userID = req.user.id;
-
-//         // Validation
-//         if (!contactNumber || !gender || !userID) {
-//             return res.status(400).json({
-//                 success: false,
-//                 message: "All fields are required"
-//             });
-//         }
-
-//         // Find user and profile
-//         const userDetails = await USER.findById(userID);
-//         if (!userDetails) {
-//             return res.status(404).json({
-//                 success: false,
-//                 message: "User not found"
-//             });
-//         }
-
-//         const profileID = userDetails.additionalDetail;
-//         const profileDetails = await PROFILE.findById(profileID);
-
-//         if (!profileDetails) {
-//             return res.status(404).json({
-//                 success: false,
-//                 message: "Profile not found"
-//             });
-//         }
-
-//         // Update profile fields
-//         profileDetails.dateOfBirth = dateOfBirth;
-//         profileDetails.about = about;
-//         profileDetails.contactNumber = contactNumber;
-//         profileDetails.gender = gender;
-
-//         await profileDetails.save();
-
-//         return res.status(200).json({
-//             success: true,
-//             message: "Profile Updated Successfully",
-//             profileDetails
-//         });
-//     } catch (error) {
-//         console.log(error);
-//         return res.status(500).json({
-//             success: false,
-//             message: "Profile cannot be updated"
-//         });
-//     }
-// };
-
+const { convertSecondsToDuration} = require('../util/secToDuration');
+const course = require("../model/course");
 
 exports.updateProfile = async (req, res) => {
   try {
@@ -227,5 +173,101 @@ exports.updateDisplayPicture = async (req,res) => {
             success : false,
             message : 'Display Picture cannot be updated',
         });
+    }
+}
+
+// Get User Enrolled Courses
+exports.getUserEnrolledCourses = async (req, res) => {
+    try {
+        const userID = req.user.id;
+        let userDetails = await USER.findById(userID)
+        .populate({
+            path: 'courses',
+            populate : {
+                path : 'courseContent',
+                populate : {
+                    path : 'subSection'
+                }
+            }
+        }) .exec();
+        userDetails = userDetails.toObject();
+
+        var subSectionLength = 0;
+        for(var i=0;i<userDetails.courses.length;i++){
+            let totalDurationInSeconds = 0;
+            subSectionLength = 0;
+            for(var j=0;j<userDetails.courses[i].courseContent.length;j++){
+                totalDurationInSeconds += userDetails.courses[i].courseContent[j]
+                .subSection.reduce((acc,curr) => acc + parseInt(curr.timeDuration),0)
+                userDetails.courses[i].totalDuration = convertSecondsToDuration(totalDurationInSeconds)
+                subSectionLength += userDetails.courses[i].courseContent[j].subSection.length
+            }
+            let courseProgressCount = await COURSE_PROGRESS.findOne({
+                courseID : userDetails.courses[i]._id,
+                userID : userID
+            })
+            courseProgressCount = courseProgressCount?.completedvideos.length
+            if(subSectionLength === 0){
+                userDetails.courses[i].progressPercentage = 100
+            } else {
+                const multiplier = Math.pow(10,2)
+                userDetails.courses[i].progressPercentage = Math.round(
+                    ((courseProgressCount / subSectionLength) * 100 * multiplier) / multiplier
+                )
+            }
+        }
+
+        if (!userDetails) {
+            return res.status(400).json({
+                success: false,
+                message: `Could not find user with id: ${userDetails}`,
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            data: userDetails.courses,
+        })
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success : false,
+            message : 'Unable to fetch enrolled courses'
+        })
+    }
+}
+
+// Get insructor Details
+exports.instructorDashboard = async (req,res) => {
+    try {
+        const userID = req.user.id;
+        const courseDetails = await COURSE.findById({instructor : userID});
+
+        const courseData = courseDetails.map((course) => {
+            const totalStudentsEnrolled = course.studentsEnrolled.length
+            const totalAmountGenerated = totalStudentsEnrolled * course.updatedProfilePicture
+            const courseDataWithStatics = {
+                _id : course._id,
+                courseName : course.courseName,
+                courseDescription : course.courseDescription,
+                totalStudentsEnrolled,
+                totalAmountGenerated
+            }
+
+            return courseDetails
+        })
+        return res.status(200).json({
+            success : true,
+            message: "Data Fetched successfully",
+            courses : courseData
+        })
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success : false,
+            message : "Can't Fetch Instructor Details"
+        })
     }
 }
