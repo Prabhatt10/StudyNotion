@@ -2,7 +2,7 @@ const COURSE = require("../model/course");
 const CATEGORY = require("../model/category");
 const USER = require("../model/user");
 const {imageUploadToCloudinary} = require("../util/imageUploader");
-const { useInsertionEffect } = require("react");
+// const { useInsertionEffect } = require("react");
 require("dotenv").config();
 
 // create course

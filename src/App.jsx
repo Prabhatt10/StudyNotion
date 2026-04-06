@@ -3,6 +3,9 @@ import { Routes, Route, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
+// UTILS
+import { ACCOUNT_TYPE } from './utils/constants';
+
 // Routes & Components
 import OpenRoute from './component/core/Auth/OpenRoute';
 import PrivateRoute from './component/core/Auth/PrivateRoute';
@@ -12,6 +15,7 @@ import MyProfile from './component/core/Dashboard/MyProfile'
 import Settings from './component/core/Dashboard/Settings/settings'
 import EnrolledCourses from './component/core/Dashboard/EnrolledCourses';
 import Cart from './component/core/Dashboard/Cart/Cart';
+import AddCourse from './component/core/Dashboard/AddCourse';
 
 // Pages
 import Home from './pages/HomePage';
@@ -95,8 +99,24 @@ function App() {
         >
           <Route path='/dashboard/my-profile' element={<MyProfile />} />
           <Route path='/dashboard/settings' element={<Settings />} />
-          <Route path='/dashboard/enrolled-courses' element={<EnrolledCourses />} />
-          <Route path='/dashboard/cart' element={<Cart />} />
+            
+
+           {
+            user?.accountType === ACCOUNT_TYPE.STUDENT && (
+              <>
+                <Route path='/dashboard/enrolled-courses' element={<EnrolledCourses />} />
+                <Route path='/dashboard/cart' element={<Cart />} />
+              </>
+            )
+          }
+
+          {
+            user?.accountType === ACCOUNT_TYPE.INSTRUCTOR && (
+              <>
+                <Route path='/dashboard/add-course' element={<AddCourse />} />
+              </>
+            )
+          }
         </Route>
 
         
