@@ -3,7 +3,7 @@ import RenderSteps from './RenderSteps'
 
 function AddCourse() {
   return (
-    <div className="w-full px-4 sm:px-6 lg:px-5 ">
+    <div className="w-full px-4 sm:px-6 lg:px-5 h-full py-10">
       <div className="flex flex-col xl:flex-row w-full gap-6 ">
         
         {/* Left Section */}
@@ -18,7 +18,7 @@ function AddCourse() {
         </div>
 
         {/* Right Sidebar */}
-        <div className="w-full xl:max-w-[400px] rounded-md border border-[#2C333F] bg-[#161D29] p-4 sm:p-6 xl:sticky xl:top-10 ">
+        <div className="w-full xl:max-w-[400px] rounded-md border border-[#2C333F] bg-[#161D29] p-4 sm:p-6 xl:sticky xl:top-10 h-120 ">
           
           <p className="mb-6 sm:mb-8 text-base sm:text-lg text-[#F1F2FF]">
             ⚡ Course Upload Tips
