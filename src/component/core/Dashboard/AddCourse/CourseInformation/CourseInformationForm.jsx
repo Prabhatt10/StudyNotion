@@ -2,12 +2,23 @@ import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux';
 import { HiOutlineCurrencyRupee } from 'react-icons/hi';
-import { fetchCourseCategories } from '../../../../../services/operations/courseDetailsAPI'
 import Upload from '../Upload';
 import ChipInput from './ChipInput';
 import RequirementField from './RequirementField';
 import IconButton from '../../../../../component/common/IconButton'
 import { MdNavigateNext } from 'react-icons/md';
+
+import {
+  setCourse,
+  setEditCourse,
+  setStep,
+} from "../../../../../slices/CourseSlice";
+
+import { 
+  fetchCourseCategories,
+  addCourseDetails,
+  editCourseDetails
+} from '../../../../../services/operations/courseDetailsAPI'
 
 function CourseInformationForm() {
 
@@ -22,15 +33,14 @@ function CourseInformationForm() {
   const dispatch = useDispatch();
 
   const { course, editCourse } = useSelector((state) => state.course);
-
+  const { token } = useSelector((state) => state.auth);
   const [loading, setLoading] = useState(false);
-
   const [courseCategory, setCourseCategory] = useState([]);
 
   useEffect(() => {
 
     const getCategories = async () => {
-
+      
       setLoading(true);
 
       const categories = await fetchCourseCategories();
@@ -50,20 +60,62 @@ function CourseInformationForm() {
       setValue("coursePrice", course.price);
       setValue("courseTags", course.tag);
       setValue("courseBenefits", course.whatYouWillLearn);
-      setValue("courseCategory", course.category);
+      // setValue("courseCategory", course.category);
+      setValue("courseCategory", course.category?._id);
       setValue("courseRequirements", course.instructions);
       setValue("courseThumbnail", course.thumbnail);
     }
-    getCategories();
+    // getCategories();
   },[])
 
+  // const onSubmit = async (data) => {
+  //   if(editCourse){
+  //     const currentValues = getValues();
+  //     const formData = new FormData();
+  //   }
+  // }
+
   const onSubmit = async (data) => {
-    if(editCourse){
-      const currentValues = getValues();
+    setLoading(true);
+    try {
+      let result = null;
       const formData = new FormData();
-      
+
+      if (editCourse) {
+        formData.append("courseId", course._id);
+      }
+
+      formData.append("courseName", data.courseTitle);
+      formData.append("courseDescription", data.courseShortDescription);
+      formData.append("price", data.coursePrice);
+      formData.append("category", data.courseCategory);
+      formData.append("whatYouWillLearn", data.courseBenefits);
+      formData.append("tag", JSON.stringify(data.courseTags));
+      formData.append(
+        "instructions",
+        JSON.stringify(data.courseRequirements)
+      );
+
+      if (data.courseThumbnail) {
+        formData.append("thumbnailImage", data.courseThumbnail);
+      }
+
+      if (editCourse) {
+        result = await editCourseDetails(formData, token);
+      } else {
+        result = await addCourseDetails(formData, token);
+      }
+
+      if (result) {
+        dispatch(setCourse(result));
+        dispatch(setStep(2));
+      }
+    } catch (error) {
+      console.error("COURSE SUBMIT ERROR:", error);
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div>
@@ -133,16 +185,17 @@ function CourseInformationForm() {
 
           <label
             className="text-sm text-richblack-5"
-            htmlFor="price"
+            htmlFor="coursePrice"
           >
             Course Price
             <sup className="text-pink-200">*</sup>
           </label>
 
           <input
-            id='price'
+            id='coursePrice'
+            type='number'
             placeholder='Enter Price'
-            {...register("price", {
+            {...register("coursePrice", {
               required: true,
               valueAsNumber: true
             })}
@@ -152,7 +205,7 @@ function CourseInformationForm() {
           <HiOutlineCurrencyRupee className='absolute text-richblack-200 bottom-5 right-3' />
 
           {
-            errors.price && (
+            errors.coursePrice && (
               <span className='text-pink-200 text-sm'>
                 Price is required
               </span>
@@ -272,6 +325,7 @@ function CourseInformationForm() {
           {
             editCourse && (
               <button 
+                type='button'
                 onClick={() => dispatch(setStep(2))}
                 disabled={loading}
                 className={`flex cursor-pointer items-center gap-x-2 rounded-md bg-richblack-300 py-[8px] px-[20px] font-semibold text-richblack-900`}
@@ -282,6 +336,7 @@ function CourseInformationForm() {
           }
 
           <IconButton
+            type='submit'
             disabled={loading}
             text={!editCourse ? "Next" : "Save Changes"}
           >

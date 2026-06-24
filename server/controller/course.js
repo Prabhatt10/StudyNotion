@@ -44,8 +44,8 @@ exports.createCourse = async (req, res) => {
             instructions = [_instructions];
         }
 
-        console.log("tag : ", tag);
-        console.log("instructions : ", instructions);
+        // console.log("tag : ", tag);
+        // console.log("instructions : ", instructions);
 
         if (
             !courseName ||
@@ -86,7 +86,7 @@ exports.createCourse = async (req, res) => {
             process.env.FOLDER_NAME
         );
 
-        console.log(thumbnailImage);
+        // // console.log(thumbnailImage);
 
         const newCourse = await COURSE.create({
             courseName,
@@ -113,7 +113,7 @@ exports.createCourse = async (req, res) => {
             { new: true }
         );
 
-        console.log("Category Details : ", categoryDetails);
+        // // console.log("Category Details : ", categoryDetails);
 
         return res.status(200).json({
             success: true,

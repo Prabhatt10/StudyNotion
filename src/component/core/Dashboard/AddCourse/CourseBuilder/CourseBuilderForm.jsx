@@ -9,7 +9,7 @@ import NestedView from './NestedView';
 
 import {
   createSection,
-  UpdateSection
+  updateSection
 } from '../../../../../services/operations/courseDetailsAPI';
 
 import {
