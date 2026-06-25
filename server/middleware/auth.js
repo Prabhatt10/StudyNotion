@@ -19,7 +19,7 @@ exports.auth = async (req, res, next) => {
 
     try {
       const decode = jwt.verify(token, process.env.JWT_SECRET);
-	  console.log("Decoded Token:", decode);
+	//   console.log("Decoded Token:", decode);
       req.user = decode;  // attach decoded user
     } catch (error) {
       return res.status(401).json({
@@ -76,11 +76,11 @@ exports.isAdmin = async (req, res, next) => {
 
 exports.isInstructor = async (req, res, next) => {
 	try {
-		console.log("req.user =", req.user);
+		// // console.log("req.user =", req.user);
 		const userDetails = await User.findOne({ email: req.user.email });
-		console.log("userDetails =", userDetails);
+		// // console.log("userDetails =", userDetails);
 
-		console.log(userDetails.accountType);
+		// // console.log(userDetails.accountType);
 
 
 		if (!userDetails) {
@@ -90,7 +90,7 @@ exports.isInstructor = async (req, res, next) => {
 		});
 		}
 
-		console.log("Account Type =", userDetails.accountType);
+		// // console.log("Account Type =", userDetails.accountType);
 
 		if (userDetails.accountType !== "Instructor") {
 			return res.status(401).json({

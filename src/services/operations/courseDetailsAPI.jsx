@@ -77,7 +77,7 @@ export const addCourseDetails = async (data, token) => {
       "Content-Type": "multipart/form-data",
       Authorization: `Bearer ${token}`,
     })
-    console.log("TOKEN:", token); 
+    // console.log("TOKEN:", token); 
     if (!response?.data?.success) throw new Error("Could not add course details")
     toast.success("Course created successfully")
     result = response?.data?.data
@@ -135,6 +135,7 @@ export const createSection = async (data, token) => {
   const toastId = toast.loading("Creating section...")
   let result = null
   try {
+    console.log("Data sent to backend:", data);
     const response = await apiConnector("POST", CREATE_SECTION_API, data, {
       Authorization: `Bearer ${token}`,
     })

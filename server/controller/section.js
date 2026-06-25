@@ -35,14 +35,15 @@ exports.createSection = async (req,res) => {
         res.status(200).json({
 			success: true,
 			message: "Section created successfully",
-			updatedCourse,
+			updatedCourseDetails,
 		});
+    }
+    catch (error) {
+        console.error("Create Section Error:", error);
 
-    } catch(error){
-        console.log(error);
         return res.status(500).json({
-            success : false,
-            message : "Error in creating section"
+            success: false,
+            message: error.message,
         });
     }
 }
@@ -69,7 +70,7 @@ exports.updateSection = async (req,res) => {
         res.status(200).json({
 			success: true,
 			message: "Section updated successfully",
-			updatedCourse,
+			updatedSection,
 		});
 
     }

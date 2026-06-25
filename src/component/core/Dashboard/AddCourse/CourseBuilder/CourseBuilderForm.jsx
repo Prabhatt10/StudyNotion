@@ -31,7 +31,7 @@ function CourseBuilderForm() {
   const {course} = useSelector((state) => state.course);
   const {token} = useSelector((state) => state.auth);
   const [loading,setLoading] = useState(false);
-  const [editSelectionName, setSelectionName] = useState(null);
+  const [editSectionName, setEditSectionName] = useState(null);
   const dispatch = useDispatch();
 
   const onSubmit = async (data) => {
@@ -39,11 +39,11 @@ function CourseBuilderForm() {
 
     let result;
 
-    if(editSelectionName) {
-      result = await UpdateSection(
+    if(editSectionName) {
+      result = await updateSection(
         {
           sectionName: data.sectionName,
-          sectionId: editSelectionName,
+          sectionId: editSectionName,
           courseId: course._id,
         },
         token
@@ -53,14 +53,14 @@ function CourseBuilderForm() {
       result = await createSection(
         {
           sectionName: data.sectionName,
-          courseId: course._id,
+          courseID: course._id,
         },
         token
       );
     }
     if(result) {
       dispatch(setCourse(result));
-      setEditSelectionName(null);
+      setEditSectionName(null);
       setValue("sectionName", "");
     }
     setLoading(false);
@@ -68,12 +68,12 @@ function CourseBuilderForm() {
 
 
   const cancelEdit = () => {
-    setEditSelectionName(null);
+    setEditSectionName(null);
     setValue("sectionName", "");
   }
 
   const handleChangeEditSectionName = (sectionId, sectionName) => {
-    if(editSelectionName === sectionId) {
+    if(editSectionName === sectionId) {
       cancelEdit();
       return
     }
@@ -81,6 +81,19 @@ function CourseBuilderForm() {
     setValue("sectionName", sectionName);
   }
 
+  const goToNext = () => {
+    if (course.courseContent.length === 0) {
+      toast.error("Please add atleast one section")
+      return
+    }
+    if (
+      course.courseContent.some((section) => section.subSection.length === 0)
+    ) {
+      toast.error("Please add atleast one lecture in each section")
+      return
+    }
+    dispatch(setStep(3))
+  }
 
   const goBack = () => {
     dispatch(setStep(1));
@@ -103,7 +116,7 @@ function CourseBuilderForm() {
               type = 'text'
               placeholder = 'Add a section to build your course'
               {...register("sectionName", { required: true })}
-              className='form-style w-full'
+              className='form-style w-full text-richblack-5 placeholder:text-richblack-50'
             />
             {
               errors.sectionName && (
@@ -113,12 +126,16 @@ function CourseBuilderForm() {
               )
             }
           </div>
-          <div className="flex items-end gap-x-4">
-            <IconButton 
-              Type = 'submit'
-              disabled = {loading}
-              text = {editSectionName ? "Edit Section Name" : "Create Section"}
-              outline = {true}
+          <div className="flex items-end gap-x-4 text-richblack-5">
+            <IconButton
+              type="submit"
+              disabled={loading}
+              text={
+                <span className="text-richblack-50">
+                  {editSectionName ? "Edit Section Name" : "Create Section"}
+                </span>
+              }
+              outline
             >
               <IoAddCircleOutline size={20} className="text-yellow-500" />
             </IconButton>
@@ -149,7 +166,7 @@ function CourseBuilderForm() {
           >
             Back
           </button>
-          <IconButton disabled = {loading} text='text' onClick={goToNext}>
+          <IconButton disabled = {loading} text='Next' onClick={goToNext}>
             <MdNavigateNext />
           </IconButton>
         </div>
