@@ -7,10 +7,10 @@ import { useDispatch, useSelector } from "react-redux"
 import {
   createSubSection,
   updateSubSection,
-} from "../../../../../services/operations/courseDetailsAPI"
-import { setCourse } from "../../../../../slices/courseSlice"
+} from '../../../../../services/operations/courseDetailsAPI'
+import { setCourse } from '../../../../../slices/CourseSlice'
 import IconBtn from '../../../../common/IconButton'
-import Upload from "../Upload"
+import Upload from '../Upload'
 
 export default function SubSectionModal({
   modalData,
@@ -43,7 +43,7 @@ export default function SubSectionModal({
       setValue("lectureDesc", modalData.description)
       setValue("lectureVideo", modalData.videoUrl)
     }
-  }, [])
+  },[view, edit, modalData, setValue])
 
   // detect whether form is updated or not
   const isFormUpdated = () => {
@@ -65,8 +65,8 @@ export default function SubSectionModal({
     // console.log("changes after editing form values:", currentValues)
     const formData = new FormData()
     // console.log("Values After Editing form values:", currentValues)
-    formData.append("sectionId", modalData.sectionId)
-    formData.append("subSectionId", modalData._id)
+    formData.append("sectionID", modalData.sectionId)
+    formData.append("subSectionID", modalData._id)
     if (currentValues.lectureTitle !== modalData.title) {
       formData.append("title", currentValues.lectureTitle)
     }
@@ -74,8 +74,9 @@ export default function SubSectionModal({
       formData.append("description", currentValues.lectureDesc)
     }
     if (currentValues.lectureVideo !== modalData.videoUrl) {
-      formData.append("video", currentValues.lectureVideo)
+      formData.append("videoFile", currentValues.lectureVideo)
     }
+    formData.append("timeDuraion", currentValues.timeDuration)
     setLoading(true)
     const result = await updateSubSection(formData, token)
     if (result) {
@@ -92,23 +93,26 @@ export default function SubSectionModal({
   }
 
   const onSubmit = async (data) => {
-    // console.log(data)
+    console.log("On submit called")
     if (view) return
+    if (loading) return;
 
     if (edit) {
       if (!isFormUpdated()) {
         toast.error("No changes made to the form")
       } else {
-        handleEditSubsection()
+        await handleEditSubsection()
       }
       return
     }
 
     const formData = new FormData()
-    formData.append("sectionId", modalData)
+
+    formData.append("sectionID", modalData)
     formData.append("title", data.lectureTitle)
     formData.append("description", data.lectureDesc)
-    formData.append("video", data.lectureVideo)
+    formData.append("timeDuraion", "0") // or actual duration
+    formData.append("videoFile", data.lectureVideo)
     setLoading(true)
     const result = await createSubSection(formData, token)
     if (result) {
@@ -124,7 +128,7 @@ export default function SubSectionModal({
   }
 
   return (
-    <div className="fixed inset-0 z-[1000] !mt-0 grid h-screen w-screen place-items-center overflow-auto bg-white bg-opacity-10 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[1000] !mt-0 grid h-screen w-screen place-items-center overflow-auto bg-white bg-opacity-10 backdrop-blur-sm ">
       <div className="my-10 w-11/12 max-w-[700px] rounded-lg border border-richblack-400 bg-richblack-800">
         {/* Modal Header */}
         <div className="flex items-center justify-between rounded-t-lg bg-richblack-700 p-5">
@@ -161,7 +165,7 @@ export default function SubSectionModal({
               id="lectureTitle"
               placeholder="Enter Lecture Title"
               {...register("lectureTitle", { required: true })}
-              className="form-style w-full"
+              className="form-style w-full text-richblack-5 border-2 border-richblack-900 p-2 rounded-md bg-richblack-700"
             />
             {errors.lectureTitle && (
               <span className="ml-2 text-xs tracking-wide text-pink-200">
@@ -180,7 +184,7 @@ export default function SubSectionModal({
               id="lectureDesc"
               placeholder="Enter Lecture Description"
               {...register("lectureDesc", { required: true })}
-              className="form-style resize-x-none min-h-[130px] w-full"
+              className="form-style resize-x-none min-h-[130px] w-fulltext-richblack-5 border-2 border-richblack-900 p-2 rounded-md bg-richblack-700"
             />
             {errors.lectureDesc && (
               <span className="ml-2 text-xs tracking-wide text-pink-200">
@@ -193,6 +197,7 @@ export default function SubSectionModal({
               <IconBtn
                 disabled={loading}
                 text={loading ? "Loading.." : edit ? "Save Changes" : "Save"}
+                type="submit"
               />
             </div>
           )}

@@ -8,11 +8,10 @@ const subSection = require("../model/subSection");
 exports.createSubSection = async (req,res) => {
     try{
         // fetch data
-        const {sectionID,title,timeDuraion,description} = req.body;
-        // extract file/video
-        const video = req.files.videoFile;
+        const { sectionId, title, description, timeDuration } = req.body;
+        const video = req.files?.video;
         // validate 
-        if(!sectionID || !title || !timeDuraion || !description || video){
+        if(!sectionID || !title || !timeDuraion || !description || !video){
             return res.status(400).json({
                 success : false,
                 message : 'all fields are required'
@@ -23,7 +22,7 @@ exports.createSubSection = async (req,res) => {
         // create subsection
         const updatedSubSection = await SUBSECTION.create({
             title : title,
-            timeDuration : timeDuraion,
+            timeDuration : timeDuration,
             description : description,
             videoUrl : uploadDetail.secure_url
         });
@@ -48,7 +47,8 @@ exports.createSubSection = async (req,res) => {
         console.log(error);
         return res.status(500).json({
             success : false,
-            message : 'Error in creating Subsection'
+            message : 'Error in creating Subsection',
+            data : updatedSection
         });
     }
 }
@@ -67,14 +67,45 @@ exports.updateSubSection = async (req,res) => {
 }
 
 // delete sub section
-exports.deleteSubSection = async (req,res) => {
-    try{
+// delete sub section
+exports.deleteSubSection = async (req, res) => {
+    try {
+        // fetch data
+        const { subSectionId, sectionId } = req.body;
 
-    } catch(error) {
+        // validate
+        if (!subSectionId || !sectionId) {
+            return res.status(400).json({
+                success: false,
+                message: "All fields are required",
+            });
+        }
+
+        // remove subsection from section
+        const updatedSection = await SECTION.findByIdAndUpdate(
+            sectionId,
+            {
+                $pull: {
+                    subSection: subSectionId,
+                },
+            },
+            { new: true }
+        ).populate("subSection");
+
+        // delete subsection document
+        await SUBSECTION.findByIdAndDelete(subSectionId);
+
+        return res.status(200).json({
+            success: true,
+            message: "Lecture deleted successfully",
+            data: updatedSection,
+        });
+
+    } catch (error) {
         console.log(error);
         return res.status(500).json({
-            success : false,
-            message : 'Error in deleting Subsection'
+            success: false,
+            message: "Error in deleting SubSection",
         });
     }
 }
