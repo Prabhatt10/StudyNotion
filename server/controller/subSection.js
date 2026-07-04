@@ -1,17 +1,19 @@
 const SUBSECTION = require("../model/subSection");
 const SECTION = require("../model/section");
 const { videoUploadToCloudinary } = require("../util/imageUploader");
-const subSection = require("../model/subSection");
 
 
 // create subsection
 exports.createSubSection = async (req,res) => {
     try{
         // fetch data
+        console.log("----- Create Subsection Called -----")
         const { sectionId, title, description, timeDuration } = req.body;
         const video = req.files?.video;
+        console.log("Body:", req.body);
+        console.log("Files:", req.files);
         // validate 
-        if(!sectionID || !title || !timeDuraion || !description || !video){
+        if(!sectionId || !title || !timeDuration || !description || !video){
             return res.status(400).json({
                 success : false,
                 message : 'all fields are required'
@@ -28,7 +30,7 @@ exports.createSubSection = async (req,res) => {
         });
         // update subsection in section
         const updatedSection = await SECTION.findByIdAndUpdate(
-            sectionID,
+            sectionId,
             {
                 $push: {
                     subSection: updatedSubSection._id
@@ -40,7 +42,8 @@ exports.createSubSection = async (req,res) => {
         // return response
         return res.status(200).json({
             success : true,
-            message : 'subSection created successfully'
+            message : 'subSection created successfully',
+            data : updatedSection
         });
 
     } catch(error){
@@ -48,7 +51,6 @@ exports.createSubSection = async (req,res) => {
         return res.status(500).json({
             success : false,
             message : 'Error in creating Subsection',
-            data : updatedSection
         });
     }
 }

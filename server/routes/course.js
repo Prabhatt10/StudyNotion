@@ -12,7 +12,12 @@ const {createCourse,getAllCourse,getCourseDetails,updateCourse,deleteCourse} = r
 router.post("/createCourse",auth,isInstructor,createCourse);
 router.get("/getAllCourse",getAllCourse);
 router.get("/getCourseDetails",getCourseDetails);
-router.put("/updateCourse",updateCourse);
+router.put(
+  "/updateCourse",
+  auth,
+  isInstructor,
+  updateCourse
+);
 router.delete("/deleteCourse",deleteCourse);
 
 

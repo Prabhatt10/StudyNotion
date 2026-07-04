@@ -201,17 +201,17 @@ exports.getCourseDetails = async (req, res) => {
 // update Course
 
 exports.updateCourse = async (req, res) => {
+    
     try {
-        const { courseID, courseName, courseDescription, whatYouWillLearn, price, tags } = req.body;
-        const course = await COURSE.findById(courseID);
-
+        const { courseId, courseName, courseDescription, whatYouWillLearn, price, tags } = req.body;
+        const course = await COURSE.findById(courseId);
         if (!course) {
             return res.status(404).json({
                 success: false,
                 message: 'Course not found'
             });
         }
-
+        
         // Update thumbnail if new file is uploaded
         if (req.files && req.files.thumbnailImage) {
             const thumbnailImage = await imageUploadToCloudinary(req.files.thumbnailImage, process.env.FOLDER_NAME);
@@ -237,7 +237,7 @@ exports.updateCourse = async (req, res) => {
         }
 
         await course.save();
-
+        
         return res.status(200).json({
             success: true,
             message: 'Course updated successfully',
