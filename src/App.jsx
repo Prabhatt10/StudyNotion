@@ -16,6 +16,7 @@ import Settings from './component/core/Dashboard/Settings/settings'
 import EnrolledCourses from './component/core/Dashboard/EnrolledCourses';
 import Cart from './component/core/Dashboard/Cart/Cart';
 import AddCourse from './component/core/Dashboard/AddCourse';
+import MyCourses from './component/core/Dashboard/MyCourses';
 
 // Pages
 import Home from './pages/HomePage';
@@ -114,9 +115,13 @@ function App() {
             user?.accountType === ACCOUNT_TYPE.INSTRUCTOR && (
               <>
                 <Route path='/dashboard/add-course' element={<AddCourse />} />
+                <Route path='/dashboard/my-courses' element={<MyCourses />} />
               </>
             )
           }
+
+
+
         </Route>
 
         
