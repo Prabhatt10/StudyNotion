@@ -1,7 +1,7 @@
 const USER = require("../model/user");
 const PROFILE = require("../model/profile");
 const COURSE = require("../model/course");
-const COURSE_PROGRESS = require("../model/courseprogress");
+const COURSE_PROGRESS = require("../model/courseProgress");
 const { imageUploadToCloudinary } = require("../util/imageUploader");
 const dotenv = require("dotenv");
 dotenv.config();

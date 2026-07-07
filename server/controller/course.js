@@ -2,7 +2,7 @@ const COURSE = require("../model/course");
 const CATEGORY = require("../model/category");
 const USER = require("../model/user");
 const {imageUploadToCloudinary} = require("../util/imageUploader");
-// const { useInsertionEffect } = require("react");
+const COURSE_PROGESS = require('../model/courseProgress')-
 require("dotenv").config();
 
 // create course
@@ -293,3 +293,69 @@ exports.deleteCourse = async (req, res) => {
     }
 }
 
+// Get Full Course Details
+exports.getFullCourseDetails = async (req, res) => {
+    try {
+        const { courseId } = req.body;
+        const userId = req.user.id;
+
+        const courseDetails = await COURSE.findById(courseId)
+        .populate({
+            path: "instructor",
+            populate: {
+            path: "additionalDetail",
+            },
+        })
+        .populate("category")
+        .populate("ratingAndReviews")
+        .populate({
+            path: "courseContent",
+            populate: {
+            path: "subSection",
+            },
+        })
+        .exec();
+
+        if (!courseDetails) {
+        return res.status(404).json({
+            success: false,
+            message: `Could not find course with id ${courseId}`,
+        });
+        }
+
+        const courseProgress = await COURSE_PROGESS.findOne({
+        courseID: courseId,
+        userID: userId,
+        });
+
+        let totalDurationInSeconds = 0;
+
+        courseDetails.courseContent.forEach((section) => {
+        section.subSection.forEach((subSection) => {
+            totalDurationInSeconds += parseInt(subSection.timeDuration);
+        });
+        });
+
+        const totalDuration = convertSecondsToDuration(
+        totalDurationInSeconds
+        );
+
+        return res.status(200).json({
+        success: true,
+        data: {
+            courseDetails,
+            totalDuration,
+            completedVideos: courseProgress
+            ? courseProgress.completedVideos
+            : [],
+        },
+        });
+    } catch (error) {
+        console.log(error);
+
+        return res.status(500).json({
+        success: false,
+        message: error.message,
+        });
+    }
+};
