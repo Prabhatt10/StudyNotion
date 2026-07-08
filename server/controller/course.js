@@ -359,3 +359,26 @@ exports.getFullCourseDetails = async (req, res) => {
         });
     }
 };
+
+
+exports.getInstructorCourses = async (req,res) => {
+    try {
+        const instructorId = req.user.id
+        const instructorCourse = await COURSE.findOne({
+            instructor : instructorId
+        })
+        .sort({ createdAt : -1 })
+
+        res.status(200).json({
+            success: true,
+            data: instructorCourses,
+        })
+
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({
+            success : false,
+            message : 'Error in getting all courses of instructor'
+        })
+    }
+}

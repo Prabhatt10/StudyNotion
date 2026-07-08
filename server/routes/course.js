@@ -7,7 +7,15 @@ const {
     isInstructor 
 } = require('../middleware/auth');
 
-const {createCourse,getAllCourse,getCourseDetails,updateCourse,deleteCourse} = require('../controller/course');
+const {
+  createCourse,
+  getAllCourse, 
+  getCourseDetails,
+  updateCourse,
+  deleteCourse,
+  getFullCourseDetails,
+  getInstructorCourses
+} = require('../controller/course');
 
 router.post("/createCourse",auth,isInstructor,createCourse);
 router.get("/getAllCourse",getAllCourse);
@@ -19,6 +27,8 @@ router.put(
   updateCourse
 );
 router.delete("/deleteCourse",deleteCourse);
+router.get("/getFullCourseDetails",auth,getFullCourseDetails);
+router.get("/getInstructorCourses",auth,isInstructor,getInstructorCourses);
 
 
 module.exports = router;

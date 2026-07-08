@@ -3,7 +3,14 @@ const router = express.Router();
 
 const {createRating,averageRating,getAllRating} = require("../controller/ratingAndReview");
 
-router.post("/createRating",createRating);
+const {
+    auth,
+    isStudent,
+    isAdmin,
+    isInstructor
+} = require('../middleware/auth');
+
+router.post("/createRating",auth,isStudent,createRating);
 router.post("/averageRating",averageRating);
 router.get("/getAllRating",getAllRating);
 
