@@ -29,7 +29,7 @@ export const courseEndpoints = {
   CREATE_COURSE_API : `${BASE_URL}/course/createCourse`, 
   GET_ALL_COURSE_API : `${BASE_URL}/course/getAllCourse`,
   GET_COURSE_DETAILS_API : `${BASE_URL}/course/getCourseDetails`,
-  UPDATE_COURSE : `${BASE_URL}/course/updateCourse`,
+  UPDATE_COURSE_API : `${BASE_URL}/course/updateCourse`,
   DELETE_COURSE_API : `${BASE_URL}/course/deleteCourse`,
   GET_FULL_COURSE_DETAILS_API : `${BASE_URL}/course/getFullCourseDetails`,
   GET_INSTRUCTOR_COURSES_API : `${BASE_URL}/course/getInstructorCourses`,
@@ -39,8 +39,8 @@ export const courseEndpoints = {
   CREATE_SUBSECTION_API : `${BASE_URL}/course/createSubSection`,
   UPDATE_SUBSECTION_API : `${BASE_URL}/course/updateSubSection`,
   DELETE_SUBSECTION_API : `${BASE_URL}/course/deleteSubSection`,
-  CREATE_RATING : `${BASE_URL}/course/createRating`,
-  AVERAGE_RATING : `${BASE_URL}/course/averageRating`,
+  CREATE_RATING_API : `${BASE_URL}/course/createRating`,
+  AVERAGE_RATING_API : `${BASE_URL}/course/averageRating`,
 }
 
 export const categoriesEndpoints = {

@@ -7,7 +7,7 @@ const {
   CREATE_COURSE_API,
   GET_ALL_COURSE_API,
   GET_COURSE_DETAILS_API,
-  UPDATE_COURSE,
+  UPDATE_COURSE_API,
   DELETE_COURSE_API,
   CREATE_SECTION_API,
   UPDATE_SECTION_API,
@@ -15,8 +15,10 @@ const {
   CREATE_SUBSECTION_API,
   UPDATE_SUBSECTION_API,
   DELETE_SUBSECTION_API,
-  CREATE_RATING,
-  AVERAGE_RATING,
+  CREATE_RATING_API,
+  AVERAGE_RATING_API,
+  GET_FULL_COURSE_DETAILS_API,
+  GET_INSTRUCTOR_COURSES_API
 } = courseEndpoints
 
 const { GET_ALL_CATEGORIES_API } = categoriesEndpoints
@@ -99,7 +101,7 @@ export const editCourseDetails = async (data, token) => {
   const toastId = toast.loading("Updating course...")
   let result = null
   try {
-    const response = await apiConnector("PUT", UPDATE_COURSE, data, {
+    const response = await apiConnector("PUT", UPDATE_COURSE_API, data, {
       "Content-Type": "multipart/form-data",
       Authorization: `Bearer ${token}`,
     })
@@ -250,7 +252,7 @@ export const createRating = async (data, token) => {
   const toastId = toast.loading("Submitting rating...")
   let success = false
   try {
-    const response = await apiConnector("POST", CREATE_RATING, data, {
+    const response = await apiConnector("POST", CREATE_RATING_API, data, {
       Authorization: `Bearer ${token}`,
     })
     if (!response?.data?.success) throw new Error("Could not create rating")
@@ -262,4 +264,82 @@ export const createRating = async (data, token) => {
   }
   toast.dismiss(toastId)
   return success
+}
+
+export const fetchInstructorCourses = async (token) => {
+  const toastId = toast.loading("Loading instructor courses...")
+  let result = []
+
+  try {
+    const response = await apiConnector(
+      "GET",
+      GET_INSTRUCTOR_COURSES_API,
+      null,
+      {
+        Authorization: `Bearer ${token}`,
+      }
+    )
+
+    if (!response?.data?.success) {
+      throw new Error("Could not fetch instructor courses")
+    }
+
+    result = response?.data?.data
+  } catch (error) {
+    console.log("GET_ALL_INSTRUCTOR_COURSES_API ERROR →", error)
+    toast.error(error.message)
+  }
+
+  toast.dismiss(toastId)
+  return result
+}
+
+export const getFullDetailsOfCourse = async (courseId, token) => {
+  const toastId = toast.loading("Loading course...")
+  let result = null
+
+  try {
+    const response = await apiConnector(
+      "POST",
+      GET_INSTRUCTOR_COURSES_API,
+      { courseId },
+      {
+        Authorization: `Bearer ${token}`,
+      }
+    )
+
+    if (!response?.data?.success) {
+      throw new Error(response.data.message)
+    }
+
+    result = response?.data?.data
+  } catch (error) {
+    console.log("GET_INSTRUCTOR_COURSES_API ERROR →", error)
+    result = error.response?.data
+  }
+
+  toast.dismiss(toastId)
+  return result
+}
+
+export const getAverageRating = async (courseId) => {
+  let result = null
+
+  try {
+    const response = await apiConnector(
+      "POST",
+      AVERAGE_RATING_API,
+      { courseId }
+    )
+
+    if (!response?.data?.success) {
+      throw new Error("Could not fetch average rating")
+    }
+
+    result = response?.data?.averageRating
+  } catch (error) {
+    console.log("AVERAGE_RATING_API ERROR →", error)
+  }
+
+  return result
 }
