@@ -12,7 +12,7 @@ const {
 } = require("../middleware/auth");
 
 
-router.post("/capturePayment",capturePayment);
+router.post("/capturePayment",auth,isStudent,capturePayment);
 
 
 module.exports = router;

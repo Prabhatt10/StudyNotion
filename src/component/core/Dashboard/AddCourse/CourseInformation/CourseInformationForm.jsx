@@ -68,13 +68,6 @@ function CourseInformationForm() {
     // getCategories();
   },[])
 
-  // const onSubmit = async (data) => {
-  //   if(editCourse){
-  //     const currentValues = getValues();
-  //     const formData = new FormData();
-  //   }
-  // }
-
   const onSubmit = async (data) => {
     setLoading(true);
     try {
@@ -167,7 +160,7 @@ function CourseInformationForm() {
             id='courseShortDescription'
             placeholder='Enter Description'
             {...register("courseShortDescription", { required: true })}
-            className='min-h-[140px] w-full bg-richblack-700 text-richblack-5 rounded-md form-style p-2'
+            className='min-h-\[140px\] w-full bg-richblack-700 text-richblack-5 rounded-md form-style p-2'
           />
 
           {
@@ -295,7 +288,7 @@ function CourseInformationForm() {
             id='courseBenefits'
             placeholder='Enter Benefits'
             {...register("courseBenefits", { required: true })}
-            className='min-h-[140px] w-full bg-richblack-700 text-richblack-5 rounded-md form-style p-2'
+            className='min-h-\[140px\] w-full bg-richblack-700 text-richblack-5 rounded-md form-style p-2'
           />
 
           {
@@ -328,7 +321,7 @@ function CourseInformationForm() {
                 type='button'
                 onClick={() => dispatch(setStep(2))}
                 disabled={loading}
-                className={`flex cursor-pointer items-center gap-x-2 rounded-md bg-richblack-300 py-[8px] px-[20px] font-semibold text-richblack-900`}
+                className={`flex cursor-pointer items-center gap-x-2 rounded-md bg-richblack-300 py-2 px-5 font-semibold text-richblack-900`}
               >
                 Continue Without Saving
               </button>
