@@ -26,11 +26,13 @@ export const profileEndpoints = {
 }
 
 export const courseEndpoints = {
-  CREATE_COURSE_API : `${BASE_URL}/course/createCourse`,
+  CREATE_COURSE_API : `${BASE_URL}/course/createCourse`, 
   GET_ALL_COURSE_API : `${BASE_URL}/course/getAllCourse`,
   GET_COURSE_DETAILS_API : `${BASE_URL}/course/getCourseDetails`,
   UPDATE_COURSE : `${BASE_URL}/course/updateCourse`,
   DELETE_COURSE_API : `${BASE_URL}/course/deleteCourse`,
+  GET_FULL_COURSE_DETAILS_API : `${BASE_URL}/course/getFullCourseDetails`,
+  GET_INSTRUCTOR_COURSES_API : `${BASE_URL}/course/getInstructorCourses`,
   CREATE_SECTION_API : `${BASE_URL}/course/createSection`,
   UPDATE_SECTION_API : `${BASE_URL}/course/updateSection`,
   DELETE_SECTION_API : `${BASE_URL}/course/deleteSection`,
@@ -38,12 +40,13 @@ export const courseEndpoints = {
   UPDATE_SUBSECTION_API : `${BASE_URL}/course/updateSubSection`,
   DELETE_SUBSECTION_API : `${BASE_URL}/course/deleteSubSection`,
   CREATE_RATING : `${BASE_URL}/course/createRating`,
-  AVERAGE_RATING : `${BASE_URL}/course/averageRating`
+  AVERAGE_RATING : `${BASE_URL}/course/averageRating`,
 }
 
 export const categoriesEndpoints = {
   GET_ALL_CATEGORIES_API: `${BASE_URL}/category/getAllCategory`,
   CREATE_CATEGORY_API : `${BASE_URL}/category/createCategory`,
+  CATEGORY_PAGE_DETAILS_API : `${BASE_URL}/category/categoryPageDetails`
 };
 
 export const ratingEndpoints = {

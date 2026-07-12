@@ -7,7 +7,7 @@ const {
     getAllUserDetails,
     updateDisplayPicture,
     getUserEnrolledCourses,
-    instructorDashboard
+    instructorData
 } = require("../controller/profile");
 
 const { auth } = require("../middleware/auth");
@@ -17,6 +17,6 @@ router.delete("/deleteProfile",auth,deleteProfile);
 router.get("/getAllUserDetails",auth,getAllUserDetails);
 router.put("/updateDisplayPicture",auth,updateDisplayPicture);
 router.get("/getUserEnrolledCourses",auth,getUserEnrolledCourses);
-router.get("/instructorDashboard",auth,instructorDashboard)
+router.get("/instructorData",auth,instructorData)
 
 module.exports = router;
