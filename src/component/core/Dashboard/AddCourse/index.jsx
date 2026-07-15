@@ -18,7 +18,7 @@ function AddCourse() {
         </div>
 
         {/* Right Sidebar */}
-        <div className="w-full rounded-md border border-[#2C333F] bg-[#161D29] p-4 sm:p-6 xl:sticky xl:top-10 h-120 ">
+        <div className="w-full xl:max-w-100 rounded-md border border-[#2C333F] bg-[#161D29] p-4 sm:p-6 xl:sticky xl:top-10 h-120 ">
           
           <p className="mb-6 sm:mb-8 text-base sm:text-lg text-[#F1F2FF]">
             ⚡ Course Upload Tips

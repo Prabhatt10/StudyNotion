@@ -33,6 +33,7 @@ export const courseEndpoints = {
   DELETE_COURSE_API : `${BASE_URL}/course/deleteCourse`,
   GET_FULL_COURSE_DETAILS_API : `${BASE_URL}/course/getFullCourseDetails`,
   GET_INSTRUCTOR_COURSES_API : `${BASE_URL}/course/getInstructorCourses`,
+  // GET_INSTRUCTOR_COURSES_API: `${BASE_URL}/course/my-courses`,
   CREATE_SECTION_API : `${BASE_URL}/course/createSection`,
   UPDATE_SECTION_API : `${BASE_URL}/course/updateSection`,
   DELETE_SECTION_API : `${BASE_URL}/course/deleteSection`,

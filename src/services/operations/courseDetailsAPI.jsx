@@ -266,6 +266,7 @@ export const createRating = async (data, token) => {
   return success
 }
 
+// ✅ Fetch instructor courses
 export const fetchInstructorCourses = async (token) => {
   const toastId = toast.loading("Loading instructor courses...")
   let result = []
@@ -294,6 +295,7 @@ export const fetchInstructorCourses = async (token) => {
   return result
 }
 
+// ✅ Fetch full details of a course
 export const getFullDetailsOfCourse = async (courseId, token) => {
   const toastId = toast.loading("Loading course...")
   let result = null
@@ -322,6 +324,7 @@ export const getFullDetailsOfCourse = async (courseId, token) => {
   return result
 }
 
+// ✅ Fetch average rating for a course
 export const getAverageRating = async (courseId) => {
   let result = null
 

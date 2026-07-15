@@ -21,7 +21,7 @@ import { COURSE_STATUS } from "../../../../utils/constants";
 import { formatDate } from "../../../../services/formatDate";
 import {
   deleteCourse,
-  getAllCourses,
+  fetchInstructorCourses,
 } from "../../../../services/operations/courseDetailsAPI";
 
 import ConfirmationModal from "../../../common/ConfirmationModal";
@@ -42,7 +42,7 @@ function CourseTable({ courses, setCourses }) {
 
     await deleteCourse({ courseId }, token);
 
-    const result = await getAllCourses(token);
+    const result = await fetchInstructorCourses(token);
 
     if (result) {
       setCourses(result);

@@ -29,6 +29,7 @@ router.put(
 router.delete("/deleteCourse",deleteCourse);
 router.get("/getFullCourseDetails",auth,getFullCourseDetails);
 router.get("/getInstructorCourses",auth,isInstructor,getInstructorCourses);
+// router.get("/my-courses",auth,isInstructor,getInstructorCourses);
 
 
 module.exports = router;

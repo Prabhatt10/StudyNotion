@@ -361,24 +361,53 @@ exports.getFullCourseDetails = async (req, res) => {
 };
 
 
-exports.getInstructorCourses = async (req,res) => {
-    try {
-        const instructorId = req.user.id
-        const instructorCourse = await COURSE.findOne({
-            instructor : instructorId
-        })
-        .sort({ createdAt : -1 })
+// exports.getInstructorCourses = async (req,res) => {
+//     try {
+//         const instructorId = req.user.id
+//         const instructorCourse = await COURSE.findOne({
+//             instructor : instructorId
+//         })
+//         .sort({ createdAt : -1 })
 
-        res.status(200).json({
-            success: true,
-            data: instructorCourses,
-        })
+//         res.status(200).json({
+//             success: true,
+//             data: instructorCourses,
+//         })
 
-    } catch (error) {
-        console.log(error)
-        return res.status(500).json({
-            success : false,
-            message : 'Error in getting all courses of instructor'
-        })
-    }
-}
+//     } catch (error) {
+//         console.log(error)
+//         return res.status(500).json({
+//             success : false,
+//             message : 'Error in getting all courses of instructor'
+//         })
+//     }
+// }
+
+
+// Get Instructor Courses
+exports.getInstructorCourses = async (req, res) => {
+  try {
+    const instructorId = req.user.id;
+
+    console.log("========== GET INSTRUCTOR COURSES ==========");
+    console.log("Instructor ID:", instructorId);
+
+    const instructorCourses = await COURSE.find({
+      instructor: instructorId,
+    }) .sort({ createdAt: -1 });
+
+    console.log("Instructor Courses:", instructorCourses);
+
+    return res.status(200).json({
+      success: true,
+      data: instructorCourses,
+    });
+  } catch (error) {
+    console.error("Error in getInstructorCourses:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Error in getting instructor courses",
+    });
+  }
+};
